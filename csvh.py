@@ -156,6 +156,32 @@ def find_nans(filepath, hasheaders = True, hasindexcol=True):
         return exceptions
 
 
+def remove_row(filepath, nrow):
+    '''
+    Removes the nrow-th row (starting at 0) of the CSV file.
+    It does this by rewritting, so it's probably pretty little efficient.
+
+    Arguments:
+     - nrow : nomber of row to remove. If < 0, it will be understood 
+        as standard list[:-1] syntax
+
+    Returns:
+     - modifies the file with removed row
+     - show removed row
+    '''
+
+    import os
+    lines = []
+    with open(filepath, 'r') as f:
+        for i,line in enumerate(f):
+            if i != nrow:
+                lines.append(line)
+    os.remove(filepath)
+
+    with open(filepath, 'x') as f: #this should create and write
+        for line in lines:
+            f.write(line)
+
 
 
 

@@ -182,7 +182,42 @@ def remove_row(filepath, nrow):
         for line in lines:
             f.write(line)
 
+def col_subset(filename, pattern, outputfile, include_first=True):
+    '''
+    Creates a new csv with a subset of the columns of the given csv.
+    Used pandas to do this for convenience
+    
+    Arguments
+    ---------
+     - filename : file path or object
+     - pattern : currently, a substring to be located with the 'in' statement
+     - outputfile : file path or object
+     - include_first : optional, default True. Whether to add the first col (typically, index)
+     
+     Returns
+     --------
+      - CSV file in the given directory
+    '''
+    
+    import csv
+    with open(filename, 'r') as f:
+        reader = csv.DictReader(f)
+        colnames = reader.fieldnames
+    coltypes = {col:object for col in colnames}
 
+    #Get the data into a DF, "as is" (objects)
+    df = pd.read_csv(filename, engine='c', dtype=coltypes)
+
+    #Prepare the columns that we will output
+    subset_cols = [c for c in df.columns if pattern in c]
+    if include_first:
+        subset_cols.insert(0, colnames[0])
+
+    #Prepare the subset of the dataframe of interest
+    subset_df = df[subset_cols]
+
+    #Export
+    subset_df.to_csv(outputfile, index=False, na_rep='NaN')
 
 
 
